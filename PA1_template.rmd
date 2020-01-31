@@ -1,0 +1,73 @@
+---
+title: "assignment 5-1"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+
+```{r}
+data <- read.csv("E:/Nada/Others/Courses/Data Science Specialization/Ex/Course 5/activity.csv")
+processedData <- subset(data, !is.na(data$steps))
+
+sums <- aggregate(as.numeric(processedData$steps), by=list(date=processedData$date), FUN=sum)
+plot(sums$date, sums$x, type="l", main = "The Average Number of Steps Taken Across all Days", xlab="Interval", ylab="Average Number of Steps")
+```
+
+
+
+
+```{r}
+avg <- aggregate(as.numeric(processedData$steps), by=list(interval=processedData$interval), FUN=mean)
+plot(avg$interval, avg$x, type="l", main = "The Average Number of Steps Taken Across all Days", xlab="Interval", ylab="Average Number of Steps")
+```
+
+The maximum average is 
+```{r}
+max(avg$x)
+```
+
+
+
+The number of missing values is 
+
+```{r}
+sum(which(is.na(data)))
+```
+
+Replacing the missing values by average of the time interval
+
+```{r}
+navalues <- subset(data, is.na(data))
+index <- which(is.na(data))
+navalues$steps[avg$interval == navalues$interval] <- avg$x
+finalData <- data
+finalData$steps[index] <- navalues$steps
+
+sums <- aggregate(as.numeric(finalData$steps), by=list(date=finalData$date), FUN=sum)
+plot(sums$date, sums$x, type="l", main = "The Average Number of Steps Taken Across all Days", xlab="Interval", ylab="Average Number of Steps")
+```
+
+
+
+
+
+```{r}
+library(lubridate)
+week <- weekdays(as.Date(finalData$date))
+finalData$weekday <- week
+```
+
+
+
+
+
+
+
